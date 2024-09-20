@@ -1,9 +1,11 @@
 "use client";
 import { IDKitWidget, VerificationLevel } from '@worldcoin/idkit';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 const WorldIDLogin = () => {
   const [verified, setVerified] = useState(false);
+  const router = useRouter(); // Use Next.js router for redirection
 
   // Function to verify proof with the backend server
   const verifyProof = async (proof) => {
@@ -21,6 +23,8 @@ const WorldIDLogin = () => {
         setVerified(verified);
         if (verified) {
           console.log('Verification successful');
+          // Redirect to /chat after successful verification
+          router.push('/chat');
         }
       } else {
         const error = await response.json();
@@ -35,11 +39,13 @@ const WorldIDLogin = () => {
   const onSuccess = () => {
     console.log('Verification succeeded');
     setVerified(true);
+    // Redirect to /chat after successful verification
+    router.push('/chat');
   };
 
   return (
     <IDKitWidget
-      app_id="app_staging_b5350534c753a6583385bd6026f89d31"  
+      app_id="app_staging_b5350534c753a6583385bd6026f89d31"
       action="log-in"
       verification_level={VerificationLevel.Device}
       handleVerify={verifyProof}

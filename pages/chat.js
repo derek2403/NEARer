@@ -3,6 +3,7 @@ import CreateWallet from '../components/CreateWallet';
 import ListWallet from '../components/ListWallet';
 import Staking from '../components/Staking';
 import Transfer from '../components/Transfer';
+import Header from '@/components/Header';
 
 const Chatbot = () => {
   const [userInput, setUserInput] = useState('');
@@ -13,30 +14,30 @@ const Chatbot = () => {
     e.preventDefault();
     if (!userInput.trim()) return;
     setLoading(true);
-  
+
     // Log the user input (prompt)
     console.log('User prompt:', userInput);
-  
+
     try {
       const res = await fetch(`/api/chat?chatQuery=${encodeURIComponent(userInput)}&model=gpt-4o`, {
         method: 'GET',
       });
-  
+
       const data = await res.json();
-  
+
       // If the response has a 'body' field (from your test script), parse it
       let agentDataResponse;
-  
+
       if (data.body) {
         agentDataResponse = JSON.parse(data.body);
       } else {
         agentDataResponse = data;
       }
-  
+
       // Console log the index and parameters
       console.log('Index:', agentDataResponse.index);
       console.log('Parameters:', agentDataResponse);
-  
+
       setAgentData(agentDataResponse);
       setUserInput('');
     } catch (error) {
@@ -48,6 +49,16 @@ const Chatbot = () => {
   };
 
   const renderAgentResponse = (agentData) => {
+    if (!agentData) {
+      return (
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Default Response"
+          className="mx-auto my-4"
+        />
+      );
+    }
+
     const { index } = agentData;
 
     switch (index) {
@@ -65,26 +76,38 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Chat with the Agent</h1>
-      <div className="border border-gray-300 rounded-lg p-4 min-h-[300px] max-h-[500px] overflow-y-auto mb-4">
-        {loading && <p className="text-gray-500">Loading...</p>}
+    <div className="w-4/5 mx-auto h-4/5" style={{ Height: '100vh' }}>
+      <Header/>
+      <div className="border border-gray-200 shadow-lg rounded-xl p-6 min-h-[300px]  overflow-y-auto mb-6 w-full bg-white" style={{ height: '60vh' }}>
+        {loading && <p className="text-gray-500 text-center">Loading...</p>}
+        {!agentData && (
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Default Response"
+            className="mx-auto my-4"
+          />
+        )}
         {agentData && (
-          <div className="mb-4">
+          <div className="mb-4 text-center">
             {renderAgentResponse(agentData)}
           </div>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="flex">
+      <form onSubmit={handleSubmit} className="flex w-full mx-auto shadow-md rounded-lg bg-white" style={{ height: 'auto' }}>
         <input
           type="text"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Type your query..."
           required
-          className="flex-1 p-2 border border-gray-300 rounded-l-lg"
+          className="flex-1 p-4 text-gray-900 border-0 rounded-l-lg focus:outline-none"
+          style={{ fontSize: '16px', background: '#f7f7f7', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)' }}
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-r-lg">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-4 rounded-r-lg hover:bg-blue-700 transition-all"
+          style={{ fontSize: '16px', fontWeight: '500', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+        >
           Send
         </button>
       </form>

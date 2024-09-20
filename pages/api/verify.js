@@ -14,8 +14,14 @@ export default async function handler(req, res) {
   
         if (response.ok) {
           const { verified } = await response.json();
-          return res.status(200).json({ verified });
-        } else {z
+          
+          // If verified, redirect to /chat
+          if (verified) {
+            return res.redirect(302, '/chat');
+          } else {
+            return res.status(400).json({ verified: false, message: 'Verification failed' });
+          }
+        } else {
           const error = await response.json();
           return res.status(400).json({ code: error.code, detail: error.detail });
         }
@@ -26,4 +32,4 @@ export default async function handler(req, res) {
       res.setHeader('Allow', ['POST']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  }
+}
