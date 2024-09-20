@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
+import WorldIDLogin from "@/components/WorldID";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,7 +10,7 @@ const ShuffleHero = () => {
     <>
       <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
         <div>
-          <span className="block mb-4 text-xs md:text-sm text-indigo-500 font-medium">
+          <span className="block mb-4 text-xs md:text-sm text-green-500 font-medium">
             Better every day
           </span>
           <h3 className="text-4xl md:text-6xl font-semibold">
@@ -19,9 +20,7 @@ const ShuffleHero = () => {
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nam nobis
             in error repellat voluptatibus ad.
           </p>
-          <button className="bg-indigo-500 text-white font-medium py-2 px-4 rounded transition-all hover:bg-indigo-600 active:scale-95">
-            Find a class
-          </button>
+          <WorldIDLogin/>
         </div>
         <ShuffleGrid />
       </section>
@@ -49,43 +48,43 @@ const shuffle = (array) => {
 const squareData = [
   {
     id: 1,
-    src: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
+    src: "https://logowik.com/content/uploads/images/phala-network4000.jpg",
   },
   {
     id: 2,
-    src: "https://images.unsplash.com/photo-1510925758641-869d353cecc7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+    src: "https://docs.layerzero.network/img/layerzerocover.jpeg",
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1629901925121-8a141c2a42f4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+    src: "https://pbs.twimg.com/profile_images/1831456038098198528/jAnQxBc3_400x400.jpg",
   },
   {
     id: 4,
-    src: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://cdn.pixabay.com/photo/2021/05/24/09/15/ethereum-logo-6278329_960_720.png",
   },
   {
     id: 5,
-    src: "https://images.unsplash.com/photo-1524861672219-1041014917c6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://logowik.com/content/uploads/images/polygon-matic-icon3725.logowik.com.webp",
   },
   {
     id: 6,
-    src: "https://images.unsplash.com/photo-1560858794-4a9c0c06bc15?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://cdn.dribbble.com/users/3144264/screenshots/17559079/2.png",
   },
   {
     id: 7,
-    src: "https://images.unsplash.com/photo-1526045612212-70caf35c14df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://file.coinexstatic.com/2023-11-16/BB3FDB00283C55B4C36B94CFAC0C3271.png",
   },
   {
     id: 8,
-    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://images.prismic.io/worldcoin-company-website/5ef465df-1bdd-4f4b-b8ce-b2c66b40de05_story-behind-new-worldcoin-logo-2.png?auto=compress,format",
   },
   {
     id: 9,
-    src: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://mms.businesswire.com/media/20231017097939/en/1916843/22/fulllogo.jpg",
   },
   {
     id: 10,
-    src: "https://images.unsplash.com/photo-1484502249930-e1b1b1ce6240?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://www.forbes.com/advisor/wp-content/uploads/2022/05/AVAX_-_brand_image.png",
   },
   {
     id: 11,
