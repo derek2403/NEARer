@@ -10,6 +10,22 @@ const Chatbot = () => {
   const [agentData, setAgentData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Function to parse the user prompt for transfer details
+  const parseTransferPrompt = (prompt) => {
+    const regex = /transfer (\d+(\.\d+)?) matic to (\b0x[a-fA-F0-9]{40}\b) using polygon (\d+)/i;
+    const match = prompt.match(regex);
+
+    if (match) {
+      const amount = match[1]; // Extracted amount of MATIC
+      const recipientAddress = match[3]; // Extracted recipient address
+      const walletId = match[4]; // Extracted wallet ID
+
+      return { amount, recipientAddress, walletId };
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -37,6 +53,16 @@ const Chatbot = () => {
       // Console log the index and parameters
       console.log('Index:', agentDataResponse.index);
       console.log('Parameters:', agentDataResponse);
+
+      // If transfer (index 3), parse the input for transfer details
+      if (agentDataResponse.index === 3) {
+        const parsedData = parseTransferPrompt(userInput);
+        if (parsedData) {
+          agentDataResponse = { ...agentDataResponse, ...parsedData };
+        } else {
+          agentDataResponse = { message: 'Sorry, I could not understand your transfer request.', index: -1 };
+        }
+      }
 
       setAgentData(agentDataResponse);
       setUserInput('');
@@ -67,10 +93,16 @@ const Chatbot = () => {
       case 2: // List wallets
         return <ListWallet data={agentData} />;
       case 3: // Transfer funds
-        return <Transfer data={agentData} />;
+        return (
+          <Transfer
+            walletId={agentData.walletId}
+            recipientAddress={agentData.recipientAddress}
+            amount={agentData.amount}
+          />
+        );
       case 4: // Create account
         return <CreateWallet data={agentData} />;
-      case 5: // Create account
+      case 5: // Other cases
         return <Max data={agentData} />;
       default:
         return <p>{agentData.message}</p>;
