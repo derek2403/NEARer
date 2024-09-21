@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { setupAdapter } from 'near-ca';
 import { ethers } from 'ethers';
+import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Spinner } from "@nextui-org/react";
 
 const CHAIN_CONFIGS = [
   {
@@ -9,26 +10,32 @@ const CHAIN_CONFIGS = [
     chainId: 11155111,
     rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/2iPF_MT9jp-O4mQ0eWd1HpeamV3zWWt4',
     symbol: 'ETH',
+    logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    explorerUrl: 'https://sepolia.etherscan.io/address/',
   },
   {
     name: 'Polygon',
     prefix: 'polygon',
-    chainId: 80001,
+    chainId: 80002,
     rpcUrl: 'https://rpc-amoy.polygon.technology/',
     symbol: 'MATIC',
+    logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    explorerUrl: 'https://amoy.polygonscan.com/',
   },
   {
     name: 'Optimism',
     prefix: 'optimism',
     chainId: 11155420,
     rpcUrl: 'https://sepolia.optimism.io',
-    symbol: 'ETH', // Assuming Optimism uses ETH; adjust if different
+    symbol: 'ETH',
+    logo: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
+    explorerUrl: 'https://sepolia-optimism.etherscan.io/address/',
   },
 ];
 
 export default function ListWallet() {
   const [wallets, setWallets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Start with loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -89,12 +96,20 @@ export default function ListWallet() {
     fetchWallets();
   }, []); // Empty dependency array ensures this runs once on mount
 
+  const truncateAddress = (address) => {
+    return `${address.slice(0, 30)}...`;
+  };
+  const formatBalance = (balance) => {
+    return parseFloat(balance).toFixed(10);
+  };
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Multi-Chain Wallet Viewer</h1>
+      <h1 className="text-3xl font-bold mb-4">All Chain Signatures Wallet Address</h1>
 
       {isLoading && (
-        <p className="text-blue-500 mt-4">Fetching wallets, please wait...</p>
+       <div className="flex justify-center items-center h-full">
+            <Spinner color="primary" labelColor="primary" />
+          </div>
       )}
 
       {error && (
@@ -106,20 +121,42 @@ export default function ListWallet() {
       )}
 
       {wallets.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Your Wallets</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {wallets.map((wallet, index) => (
-              <div key={`${wallet.chain}-${wallet.address}-${index}`} className="border p-4 rounded shadow">
-                <h3 className="font-bold">{wallet.chain}</h3>
-                <p className="text-sm break-all">Address: {wallet.address}</p>
-                <p>
-                  Balance: {wallet.balance} {wallet.symbol}
-                </p>
-                <p className="text-xs text-gray-500">Path: {wallet.derivationPath}</p>
-              </div>
-            ))}
-          </div>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {wallets.map((wallet, index) => {
+            const chainConfig = CHAIN_CONFIGS.find(config => config.name === wallet.chain);
+            return (
+              <Card key={`${wallet.chain}-${wallet.address}-${index}`} className="max-w-[400px]">
+                <CardHeader className="flex gap-3">
+                  <Image
+                    alt={`${wallet.chain} logo`}
+                    height={40}
+                    radius="sm"
+                    src={chainConfig.logo}
+                    width={40}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md">{wallet.chain}</p>
+                    <p className="text-small text-default-500">{`${wallet.chain.toLowerCase()},${wallet.derivationPath.split(',')[1]}`}</p>
+                  </div>
+                </CardHeader>
+                <Divider/>
+                <CardBody>
+                  <p>Address: {truncateAddress(wallet.address)}</p>
+                  <p>Balance: {formatBalance(wallet.balance)} {wallet.symbol}</p>
+                </CardBody>
+                <Divider/>
+                <CardFooter>
+                  <Link
+                    isExternal
+                    showAnchorIcon
+                    href={`${chainConfig.explorerUrl}${wallet.address}`}
+                  >
+                    View on {wallet.chain} Testnet Explorer
+                  </Link>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

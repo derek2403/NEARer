@@ -2,14 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { setupAdapter } from 'near-ca';
 import { ethers } from 'ethers';
 
-``
-const HERMES_BASE_URL = 'https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=';
-const PRICE_IDS = {
-  ethUsd: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
-  opUsd: '0x385f64d993f7b77d8182ed5003d97c60aa3361f3cecfe711544d2d59165e9bdf',
-  maticUsd: '0xec5d399846a9209f3fe5881d70aae9268c94339ff9817e8d18ff19fa05eea1c8'
-};
-
 const CHAIN_CONFIGS = {
   ethereum: {
     name: 'Ethereum',
@@ -29,21 +21,20 @@ const CHAIN_CONFIGS = {
 };
 
 const HARDCODED_WALLETS = {
-  ethereum: 'ethereum,100',
+  ethereum: ['ethereum,100', 'ethereum,101'],
   optimism: 'optimism,100',
-  polygon: ['polygon,100', 'polygon,101']
+  polygon: 'polygon,100'
 };
 
 const FIXED_TRANSFER_AMOUNT = '0.001';
-const POLYGON_WALLET_ID = 'polygon,1';
 
-export default function AutoMultiChainBridgeTransfer() {
+export default function AutoMultiChainBridgeTransferEthereum() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
   const [availableWallets, setAvailableWallets] = useState({
-    ethereum: [],
-    optimism: []
+    optimism: [],
+    polygon: []
   });
 
   useEffect(() => {
@@ -51,11 +42,11 @@ export default function AutoMultiChainBridgeTransfer() {
   }, []);
 
   const fetchAvailableWallets = async () => {
-    const ethWallets = await getWalletsWithBalance('ethereum');
     const opWallets = await getWalletsWithBalance('optimism');
+    const polyWallets = await getWalletsWithBalance('polygon');
     setAvailableWallets({
-      ethereum: ethWallets,
-      optimism: opWallets
+      optimism: opWallets,
+      polygon: polyWallets
     });
   };
 
@@ -103,30 +94,11 @@ export default function AutoMultiChainBridgeTransfer() {
 
     try {
       const results = {
-        ethTxHashes: [],
         opTxHashes: [],
         polygonTxHashes: []
       };
 
-      // Transfer ETH from all available Ethereum wallets
-      for (const wallet of availableWallets.ethereum) {
-        const ethAdapter = await setupAdapter({
-          accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
-          privateKey: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_PRIVATE_KEY,
-          mpcContractId: process.env.NEXT_PUBLIC_MPC_CONTRACT_ID,
-          derivationPath: wallet.derivationPath,
-        });
-
-        const ethAmount = ethers.parseEther(FIXED_TRANSFER_AMOUNT);
-        const txHash = await ethAdapter.signAndSendTransaction({
-          to: await getWalletAddress(HARDCODED_WALLETS.ethereum),
-          value: ethAmount,
-          chainId: CHAIN_CONFIGS.ethereum.chainId,
-        });
-        results.ethTxHashes.push(txHash);
-      }
-
-      // Transfer OP from all available Optimism wallets
+      // Transfer OP from all available Optimism wallets to Ethereum
       for (const wallet of availableWallets.optimism) {
         const opAdapter = await setupAdapter({
           accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
@@ -137,31 +109,28 @@ export default function AutoMultiChainBridgeTransfer() {
 
         const opAmount = ethers.parseEther(FIXED_TRANSFER_AMOUNT);
         const txHash = await opAdapter.signAndSendTransaction({
-          to: await getWalletAddress(HARDCODED_WALLETS.optimism),
+          to: await getWalletAddress(HARDCODED_WALLETS.ethereum[0]),
           value: opAmount,
           chainId: CHAIN_CONFIGS.optimism.chainId,
         });
         results.opTxHashes.push(txHash);
       }
 
-      // Transfer MATIC from hardcoded Polygon wallets to fixed Polygon wallet
-      const polygonProvider = new ethers.JsonRpcProvider(CHAIN_CONFIGS.polygon.rpcUrl);
+      // Transfer MATIC from Polygon wallet to Ethereum
+      const polygonAdapter = await setupAdapter({
+        accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
+        privateKey: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_PRIVATE_KEY,
+        mpcContractId: process.env.NEXT_PUBLIC_MPC_CONTRACT_ID,
+        derivationPath: HARDCODED_WALLETS.polygon,
+      });
+
       const maticAmount = ethers.parseEther(FIXED_TRANSFER_AMOUNT);
-
-      results.polygonTxHashes = await Promise.all(HARDCODED_WALLETS.polygon.map(async (wallet) => {
-        const polygonAdapter = await setupAdapter({
-          accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
-          privateKey: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_PRIVATE_KEY,
-          mpcContractId: process.env.NEXT_PUBLIC_MPC_CONTRACT_ID,
-          derivationPath: wallet,
-        });
-
-        return polygonAdapter.signAndSendTransaction({
-          to: await getWalletAddress(POLYGON_WALLET_ID),
-          value: maticAmount,
-          chainId: CHAIN_CONFIGS.polygon.chainId,
-        });
-      }));
+      const txHash = await polygonAdapter.signAndSendTransaction({
+        to: await getWalletAddress(HARDCODED_WALLETS.ethereum[1]),
+        value: maticAmount,
+        chainId: CHAIN_CONFIGS.polygon.chainId,
+      });
+      results.polygonTxHashes.push(txHash);
 
       setResult(results);
     } catch (err) {
@@ -183,20 +152,20 @@ export default function AutoMultiChainBridgeTransfer() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Automated Multi-Chain Bridge Transfer</h1>
+      <h1 className="text-3xl font-bold mb-4">Automated Multi-Chain Bridge Transfer to Ethereum</h1>
       
       <div className="mb-4">
         <h2 className="text-xl font-semibold">Available Wallets</h2>
-        <h3 className="text-lg mt-2">Ethereum Wallets:</h3>
-        <ul>
-          {availableWallets.ethereum.map((wallet, index) => (
-            <li key={index}>{wallet.derivationPath} - Balance: {wallet.balance} ETH</li>
-          ))}
-        </ul>
         <h3 className="text-lg mt-2">Optimism Wallets:</h3>
         <ul>
           {availableWallets.optimism.map((wallet, index) => (
             <li key={index}>{wallet.derivationPath} - Balance: {wallet.balance} OP</li>
+          ))}
+        </ul>
+        <h3 className="text-lg mt-2">Polygon Wallet:</h3>
+        <ul>
+          {availableWallets.polygon.map((wallet, index) => (
+            <li key={index}>{wallet.derivationPath} - Balance: {wallet.balance} MATIC</li>
           ))}
         </ul>
       </div>
@@ -206,7 +175,7 @@ export default function AutoMultiChainBridgeTransfer() {
         disabled={isLoading}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
-        {isLoading ? 'Processing...' : 'Transfer 0.001 from All Wallets'}
+        {isLoading ? 'Processing...' : 'Transfer to Ethereum'}
       </button>
 
       {error && (
@@ -216,13 +185,7 @@ export default function AutoMultiChainBridgeTransfer() {
       {result && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Transfer Results</h2>
-          <h3 className="text-lg">Ethereum Transactions:</h3>
-          <ul>
-            {result.ethTxHashes.map((hash, index) => (
-              <li key={index}>{hash}</li>
-            ))}
-          </ul>
-          <h3 className="text-lg mt-2">Optimism Transactions:</h3>
+          <h3 className="text-lg">Optimism Transactions:</h3>
           <ul>
             {result.opTxHashes.map((hash, index) => (
               <li key={index}>{hash}</li>
