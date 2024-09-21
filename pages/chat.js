@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { Spinner } from "@nextui-org/react";
 import CreateWallet from '../components/CreateWallet';
 import ListWallet from '../components/ListWallet';
 import Staking from '../components/Staking';
 import Transfer from '../components/Transfer';
-import Merge from '../components/Merge';  // Import the Merge component
+import Merge from '../components/Merge';
 import Header from '@/components/Header';
 import Max from '@/components/Max';
 
@@ -11,6 +12,7 @@ const Chatbot = () => {
   const [userInput, setUserInput] = useState('');
   const [agentData, setAgentData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const containerRef = useRef(null);
 
   // Function to parse the user prompt for transfer details
   const parseTransferPrompt = (prompt) => {
@@ -37,35 +39,26 @@ const Chatbot = () => {
     e.preventDefault();
     if (!userInput.trim()) return;
     setLoading(true);
+    setAgentData(null); // Reset agentData when starting a new request
 
-    // Log the user input (prompt)
     console.log('User prompt:', userInput);
 
     try {
       let agentDataResponse = {};
       
-      // Check if the prompt contains 'merge'
       if (checkForMerge(userInput)) {
-        agentDataResponse.index = 6; // Set index to 6 for the Merge case
+        agentDataResponse.index = 6;
       } else {
         const res = await fetch(`/api/chat?chatQuery=${encodeURIComponent(userInput)}&model=gpt-4o`, {
           method: 'GET',
         });
 
         const data = await res.json();
+        agentDataResponse = data.body ? JSON.parse(data.body) : data;
 
-        // If the response has a 'body' field (from your test script), parse it
-        if (data.body) {
-          agentDataResponse = JSON.parse(data.body);
-        } else {
-          agentDataResponse = data;
-        }
-
-        // Console log the index and parameters
         console.log('Index:', agentDataResponse.index);
         console.log('Parameters:', agentDataResponse);
 
-        // If transfer (index 3), parse the input for transfer details
         if (agentDataResponse.index === 3) {
           const parsedData = parseTransferPrompt(userInput);
           if (parsedData) {
@@ -87,57 +80,53 @@ const Chatbot = () => {
   };
 
   const renderAgentResponse = (agentData) => {
-    if (!agentData) {
-      return (
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Default Response"
-          className="mx-auto my-4"
-        />  
-      );
-    }
+    if (!agentData) return null;
 
     const { index } = agentData;
 
     switch (index) {
-      case 5: // Staking
-        return <Staking data={agentData} />;
-      case 2: // List wallets
-        return <ListWallet data={agentData} />;
-      case 3: // Transfer funds
-        return (
-          <Transfer
-            walletId={agentData.walletId}
-            recipientAddress={agentData.recipientAddress}
-            amount={agentData.amount}
-          />
-        );
-      case 4: // Create account
-        return <CreateWallet data={agentData} />;
-      case 6: // Merge case
-        return <Merge data={agentData} />;
-      case 1: // Other cases
-        return <Max data={agentData} />;
-      default:
-        return <p>{agentData.message}</p>;
+      case 5: return <Staking data={agentData} />;
+      case 2: return <ListWallet data={agentData} />;
+      case 3: return (
+        <Transfer
+          walletId={agentData.walletId}
+          recipientAddress={agentData.recipientAddress}
+          amount={agentData.amount}
+        />
+      );
+      case 4: return <CreateWallet data={agentData} />;
+      case 6: return <Merge data={agentData} />;
+      case 1: return (
+        <div className="flex flex-col h-full">
+          <div className="flex-grow flex justify-center items-start pt-8">
+            <Max data={agentData} />
+          </div>
+          <div className="h-20"></div> {/* Space for additional text */}
+        </div>
+      );
+      default: return <p>{agentData.message}</p>;
     }
   };
 
   return (
-    <div className="w-4/5 mx-auto h-4/5" style={{ Height: '100vh' }}>
+    <div className="w-4/5 mx-auto h-4/5" style={{ height: '100vh' }}>
       <Header/>
-      <div className="border border-gray-200 shadow-lg rounded-xl p-6 min-h-[300px]  overflow-y-auto mb-6 w-full bg-white" style={{ height: '60vh' }}>
-        {loading && <p className="text-gray-500 text-center">Loading...</p>}
-        {!agentData && (
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Default Response"
-            className="mx-auto my-4"
-          />
-        )}
-        {agentData && (
-          <div className="mb-4 text-center">
+      <div ref={containerRef} className="border border-gray-200 shadow-lg rounded-xl p-6 min-h-[300px] overflow-y-auto mb-6 w-full bg-white" style={{ height: '60vh' }}>
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <Spinner />
+          </div>
+        ) : agentData ? (
+          <div className="h-full">
             {renderAgentResponse(agentData)}
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="Default Response"
+              className="mx-auto my-4"
+            />
           </div>
         )}
       </div>
