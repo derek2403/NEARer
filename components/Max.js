@@ -14,7 +14,7 @@ const Circle = forwardRef(({ className, children }, ref) => {
 
 Circle.displayName = "Circle";
 
-export default function Staking() {
+export default function Max() {
   const containerRef = useRef(null);
   const div1Ref = useRef(null);
   const div2Ref = useRef(null);
