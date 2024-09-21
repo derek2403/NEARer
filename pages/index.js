@@ -48,7 +48,7 @@ const squareData = [
   },
   {
     id: 2,
-    src: "https://docs.layerzero.network/img/layerzerocover.jpeg",
+    src: "https://ethglobal.b-cdn.net/organizations/dkzkp/square-logo/default.png",
   },
   {
     id: 3,
@@ -68,7 +68,7 @@ const squareData = [
   },
   {
     id: 7,
-    src: "https://file.coinexstatic.com/2023-11-16/BB3FDB00283C55B4C36B94CFAC0C3271.png",
+    src: "https://ethglobal.b-cdn.net/organizations/x3xey/square-logo/default.png",
   },
   {
     id: 8,
@@ -76,7 +76,7 @@ const squareData = [
   },
   {
     id: 9,
-    src: "https://mms.businesswire.com/media/20231017097939/en/1916843/22/fulllogo.jpg",
+    src: "https://ethglobal.b-cdn.net/organizations/yip67/square-logo/default.png",
   },
   {
     id: 10,
@@ -84,27 +84,27 @@ const squareData = [
   },
   {
     id: 11,
-    src: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/6wi0d/square-logo/default.png",
   },
   {
     id: 12,
-    src: "https://images.unsplash.com/photo-1519947486511-46149fa0a254?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/46q4i/square-logo/default.png",
   },
   {
     id: 13,
-    src: "https://images.unsplash.com/photo-1534126511673-b6899657816a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/1ijf8/square-logo/default.png",
   },
   {
     id: 14,
-    src: "https://images.unsplash.com/photo-1536340343166-069a397c97e3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/fxknf/square-logo/default.png",
   },
   {
     id: 15,
-    src: "https://images.unsplash.com/photo-1541627750162-42f40ebd063e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/e3t1p/square-logo/default.png",
   },
   {
     id: 16,
-    src: "https://images.unsplash.com/photo-1511308070845-62e32f96d95a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+    src: "https://ethglobal.b-cdn.net/organizations/4pn9u/square-logo/default.png",
   },
 ];
 

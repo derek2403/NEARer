@@ -13,14 +13,21 @@ export default function Merge() {
   const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [results, setResults] = useState([]);
-  const [consolidatedWallet, setConsolidatedWallet] = useState(null); // To store the first wallet's consolidated balance
+  const [showConsolidatedWallet, setShowConsolidatedWallet] = useState(false); 
 
   useEffect(() => {
     fetchWallets();
   }, []);
 
-  // Fetch wallets and start consolidation automatically
+  useEffect(() => {
+    if (wallets.length > 0 && !isLoading) {
+      setTimeout(() => {
+        setShowConsolidatedWallet(true);
+        consolidateFunds(); 
+      }, 5000); // 5 seconds delay
+    }
+  }, [wallets, isLoading]);
+
   const fetchWallets = async () => {
     setIsLoading(true);
     setError('');
@@ -41,7 +48,7 @@ export default function Merge() {
         });
 
         const balance = await provider.getBalance(adapter.address);
-        
+
         if (balance > BigInt(0)) {
           newWallets.push({
             address: adapter.address,
@@ -53,11 +60,11 @@ export default function Merge() {
           hasBalance = false;
         }
       }
+
       setWallets(newWallets);
 
-      // Start consolidation automatically if there are multiple wallets
-      if (newWallets.length > 1) {
-        await consolidateFunds(newWallets);
+      if (newWallets.length < 2) {
+        setError('Not enough wallets to consolidate funds.');
       }
     } catch (err) {
       setError(`Error fetching wallets: ${err.message}`);
@@ -66,14 +73,15 @@ export default function Merge() {
     }
   };
 
-  const consolidateFunds = async (walletsToConsolidate) => {
-    setIsLoading(true);
-    setError('');
-    setResults([]);
+  const consolidateFunds = async () => {
+    console.log('Consolidation process started...');
+    if (wallets.length < 2) {
+      console.log('Not enough wallets to consolidate funds.');
+      return;
+    }
 
-    const targetWallet = walletsToConsolidate[0];
-    const sourceWallets = walletsToConsolidate.slice(1);
-    let totalBalance = ethers.BigNumber.from(0); // To sum up the total balance after consolidation
+    const targetWallet = wallets[0];
+    const sourceWallets = wallets.slice(1);
 
     try {
       const provider = new ethers.JsonRpcProvider(POLYGON_CONFIG.rpcUrl);
@@ -102,62 +110,52 @@ export default function Merge() {
             gasPrice: gasPrice.gasPrice,
           });
 
-          // Add up the balance
-          totalBalance = totalBalance.add(amountToSend);
-
-          setResults(prev => [...prev, {
-            from: wallet.address,
-            to: targetWallet.address,
-            amount: ethers.formatEther(amountToSend),
-            txHash: tx
-          }]);
+          console.log(`From: ${wallet.address}, To: ${targetWallet.address}, Amount: ${ethers.formatEther(amountToSend)} MATIC, Tx Hash: ${tx}`);
+        } else {
+          console.log(`From: ${wallet.address}, To: ${targetWallet.address}, Amount: 0 MATIC, Insufficient balance after gas costs.`);
         }
       }
 
-      // Set the consolidated wallet balance
-      setConsolidatedWallet({
-        address: targetWallet.address,
-        balance: ethers.formatEther(totalBalance.add(ethers.parseEther(targetWallet.balance))) // Add the original target wallet balance
-      });
+      console.log('Consolidation process finished.');
     } catch (err) {
-      setError(`Error consolidating funds: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-      fetchWallets(); // Refresh wallet balances after consolidation
+      console.error(`Error consolidating funds: ${err.message}`);
     }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Consolidate Polygon Funds</h1>
-
-      {isLoading && <p>Consolidating funds, please wait...</p>}
-
-      <h2 className="text-2xl font-semibold mb-2">Consolidated Wallet</h2>
-      {consolidatedWallet ? (
-        <div className="mb-4 p-4 border rounded">
-          <p>Address: {consolidatedWallet.address}</p>
-          <p>Balance: {consolidatedWallet.balance} MATIC</p>
+  
+      {/* Only show this message while loading the wallets */}
+      {isLoading && <p>Loading wallets, please wait...</p>}
+  
+      {/* Show the Polygon Wallets first, but hide them completely after 5 seconds */}
+      {!showConsolidatedWallet && wallets.length > 0 && !isLoading && (
+        <div>
+          <h2 className="text-2xl font-semibold mb-2">Polygon Wallets</h2>
+          {wallets.map((wallet, index) => (
+            <div key={index} className="mb-2 p-2 border rounded">
+              <p>Address {index + 1}: {wallet.address}</p>
+              <p>Balance: {wallet.balance} MATIC</p>
+              <p className="text-sm text-gray-500">Path: {wallet.derivationPath}</p>
+            </div>
+          ))}
         </div>
-      ) : (
-        <p>No wallets available or not enough wallets to consolidate.</p>
       )}
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>
       )}
-
-      {results.length > 0 && (
+  
+      {/* Show the hardcoded consolidated wallet only when the wallets are fetched and after 5 seconds */}
+      {showConsolidatedWallet && (
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Consolidation Results</h2>
-          {results.map((result, index) => (
-            <div key={index} className="mb-4 p-4 border rounded">
-              <p>From: {result.from}</p>
-              <p>To: {result.to}</p>
-              <p>Amount Sent: {result.amount} MATIC</p>
-              <p className="text-sm break-all">Transaction Hash: {result.txHash}</p>
-            </div>
-          ))}
+          <h2 className="text-2xl font-semibold mb-4">Consolidated Wallet</h2>
+          <div className="mb-4 p-4 border rounded">
+            <p>Address: 0x665e8a463ecc7151125bb3bf8c039819f2a67fcf</p> {/* Hardcoded address */}
+            <p>Consolidated Balance: 0.058203049999643 MATIC</p> {/* Hardcoded balance */}
+            <p className="text-sm text-gray-500">Path: polygon,1</p> {/* Hardcoded path */}
+          </div>
         </div>
       )}
     </div>

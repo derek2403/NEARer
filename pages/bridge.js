@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { setupAdapter } from 'near-ca';
 import { ethers } from 'ethers';
 
-``
 const HERMES_BASE_URL = 'https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=';
 const PRICE_IDS = {
   ethUsd: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
@@ -46,9 +45,17 @@ export default function AutoMultiChainBridgeTransfer() {
     optimism: []
   });
 
+  // Fetch available wallets when the component is mounted
   useEffect(() => {
     fetchAvailableWallets();
   }, []);
+
+  // Automatically trigger the transfer after wallets have been fetched
+  useEffect(() => {
+    if (availableWallets.ethereum.length > 0 || availableWallets.optimism.length > 0) {
+      handleTransfer();
+    }
+  }, [availableWallets]);
 
   const fetchAvailableWallets = async () => {
     const ethWallets = await getWalletsWithBalance('ethereum');
@@ -145,9 +152,6 @@ export default function AutoMultiChainBridgeTransfer() {
       }
 
       // Transfer MATIC from hardcoded Polygon wallets to fixed Polygon wallet
-      const polygonProvider = new ethers.JsonRpcProvider(CHAIN_CONFIGS.polygon.rpcUrl);
-      const maticAmount = ethers.parseEther(FIXED_TRANSFER_AMOUNT);
-
       results.polygonTxHashes = await Promise.all(HARDCODED_WALLETS.polygon.map(async (wallet) => {
         const polygonAdapter = await setupAdapter({
           accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
@@ -156,6 +160,7 @@ export default function AutoMultiChainBridgeTransfer() {
           derivationPath: wallet,
         });
 
+        const maticAmount = ethers.parseEther(FIXED_TRANSFER_AMOUNT);
         return polygonAdapter.signAndSendTransaction({
           to: await getWalletAddress(POLYGON_WALLET_ID),
           value: maticAmount,
@@ -201,13 +206,7 @@ export default function AutoMultiChainBridgeTransfer() {
         </ul>
       </div>
 
-      <button
-        onClick={handleTransfer}
-        disabled={isLoading}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        {isLoading ? 'Processing...' : 'Transfer 0.001 from All Wallets'}
-      </button>
+      {isLoading && <p>Processing transfers...</p>}
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>

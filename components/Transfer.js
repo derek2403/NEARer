@@ -137,6 +137,7 @@ export default function Transfer({ walletId, recipientAddress, amount }) {
           toRef={div2Ref}
         />
 
+
       {/* Polygon Transfer Component */}
       <h1 className="text-3xl font-bold mb-4">Send Polygon Funds</h1>
 
