@@ -81,7 +81,7 @@ const Chatbot = () => {
           src="https://via.placeholder.com/150"
           alt="Default Response"
           className="mx-auto my-4"
-        />
+        />  
       );
     }
 
