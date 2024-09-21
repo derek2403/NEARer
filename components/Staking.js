@@ -34,8 +34,6 @@ export default function Staking() {
           </Circle>
         </div>
       </div>
-
-      {/* Animated Beams between the circles */}
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div1Ref}

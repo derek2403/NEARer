@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     }).toString();
 
     // Append the query parameters to the URL
-    const url = `https://wapo-testnet.phala.network/ipfs/Qmdp1BURnMBMfNR29GmiBQQ2juAZMnh6CiUuus6dLDrpbG?${queryParams}`;
+    const url = `https://wapo-testnet.phala.network/ipfs/Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ?${queryParams}`;
     
     try {
       const agentResponse = await fetch(url, {

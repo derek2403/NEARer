@@ -70,6 +70,8 @@ const Chatbot = () => {
         return <Transfer data={agentData} />;
       case 4: // Create account
         return <CreateWallet data={agentData} />;
+      case 5: // Create account
+        return <Max data={agentData} />;
       default:
         return <p>{agentData.message}</p>;
     }
