@@ -21,6 +21,7 @@
     "framer-motion": "^11.5.6",
     "near-ca": "^0.5.6",
     "next": "14.2.13",
+    "openai": "^4.63.0",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.5.2",
