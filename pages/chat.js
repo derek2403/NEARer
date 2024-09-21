@@ -121,13 +121,15 @@ const Chatbot = () => {
             {renderAgentResponse(agentData)}
           </div>
         ) : (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex flex-col justify-center items-center h-full">
             <img
-              src="https://via.placeholder.com/150"
+              src="/LOGO2.jpeg"
               alt="Default Response"
-              className="mx-auto my-4"
+              className="w-1/2 mx-auto mb-4" // Adjust width to your preference
             />
+            <h1 className="text-center font-bold">I'm your AI Agent. How can I help?</h1>
           </div>
+
         )}
       </div>
       <form onSubmit={handleSubmit} className="flex w-full mx-auto shadow-md rounded-lg bg-white" style={{ height: 'auto' }}>

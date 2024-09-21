@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { setupAdapter } from 'near-ca';
 import { ethers } from 'ethers';
+import { Accordion, AccordionItem, Spinner, Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from '@nextui-org/react'; // Import components
 
 const POLYGON_CONFIG = {
   name: 'Polygon',
@@ -13,7 +14,7 @@ export default function Merge() {
   const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showConsolidatedWallet, setShowConsolidatedWallet] = useState(false); 
+  const [showConsolidatedWallet, setShowConsolidatedWallet] = useState(false);
 
   useEffect(() => {
     fetchWallets();
@@ -23,7 +24,7 @@ export default function Merge() {
     if (wallets.length > 0 && !isLoading) {
       setTimeout(() => {
         setShowConsolidatedWallet(true);
-        consolidateFunds(); 
+        consolidateFunds();
       }, 5000); // 5 seconds delay
     }
   }, [wallets, isLoading]);
@@ -124,38 +125,75 @@ export default function Merge() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Consolidate Polygon Funds</h1>
-  
+      <h1 className="text-3xl font-bold mb-4">Consolidate Wallets</h1>
+
       {/* Only show this message while loading the wallets */}
-      {isLoading && <p>Loading wallets, please wait...</p>}
-  
+      {isLoading && (
+        <div className="flex items-center justify-center">
+          <Spinner label="Loading..." color="default" />
+        </div>
+      )}
+
       {/* Show the Polygon Wallets first, but hide them completely after 5 seconds */}
       {!showConsolidatedWallet && wallets.length > 0 && !isLoading && (
         <div>
-          <h2 className="text-2xl font-semibold mb-2">Polygon Wallets</h2>
-          {wallets.map((wallet, index) => (
-            <div key={index} className="mb-2 p-2 border rounded">
-              <p>Address {index + 1}: {wallet.address}</p>
-              <p>Balance: {wallet.balance} MATIC</p>
-              <p className="text-sm text-gray-500">Path: {wallet.derivationPath}</p>
-            </div>
-          ))}
+          <h2 className="text-2xl font-semibold mb-2">Available Wallets</h2>
+
+          {/* Accordion for Wallets */}
+          <Accordion>
+            {wallets.map((wallet, index) => (
+              <AccordionItem key={index} title={`Address ${index + 1}: ${wallet.address}`}>
+                <div className="p-2">
+                  <p>Balance: {wallet.balance} MATIC</p>
+                  <p className="text-sm text-gray-500">Derivation Path: {wallet.derivationPath}</p>
+                </div>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       )}
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>
       )}
-  
+
       {/* Show the hardcoded consolidated wallet only when the wallets are fetched and after 5 seconds */}
       {showConsolidatedWallet && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Consolidated Wallet</h2>
-          <div className="mb-4 p-4 border rounded">
-            <p>Address: 0x665e8a463ecc7151125bb3bf8c039819f2a67fcf</p> {/* Hardcoded address */}
-            <p>Consolidated Balance: 0.058203049999643 MATIC</p> {/* Hardcoded balance */}
-            <p className="text-sm text-gray-500">Path: polygon,1</p> {/* Hardcoded path */}
-          </div>
+
+          {/* Card for consolidated wallet */}
+          <Card className="max-w-[400px]">
+            <CardHeader className="flex gap-3">
+              <Image
+                alt="wallet logo"
+                height={40}
+                radius="sm"
+                src="https://cryptologos.cc/logos/polygon-matic-logo.png" // Placeholder image
+                width={40}
+              />
+              <div className="flex flex-col">
+                <p className="text-md">Polygon Consolidated Wallet</p>
+                <p className="text-small text-default-500">polygon.org</p>
+              </div>
+            </CardHeader>
+            <Divider />
+            <CardBody>
+              <p>Address: 0x665e8a463ecc7151125bb3bf8c039819f2a67fcf</p> {/* Hardcoded address */}
+              <p>Consolidated Balance: 0.058203049999643 MATIC</p> {/* Hardcoded balance */}
+              <p className="text-sm text-gray-500">Path: polygon,1</p> {/* Hardcoded path */}
+            </CardBody>
+            <Divider />
+            <CardFooter>
+              <Link
+                isExternal
+                showAnchorIcon
+                href="https://polygonscan.com" // Placeholder explorer link
+              >
+                View on Polygon Explorer
+              </Link>
+            </CardFooter>
+          </Card>
         </div>
       )}
     </div>
