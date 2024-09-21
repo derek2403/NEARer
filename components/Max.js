@@ -139,6 +139,7 @@ function Max({ data }) {
   const chainNameMap = {
     'ETH': 'ethereum',
     'OPTIMISM': 'optimism',
+    'OP': 'optimism', // Added this line to map 'OP' to 'optimism'
     'POLY': 'polygon',
     'POLYGON': 'polygon'
   };
