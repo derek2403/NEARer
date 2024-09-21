@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { setupAdapter } from 'near-ca';
 
+const OPTIMISM_TESTNET_CHAIN_ID = 11155420; 
 
-const SEPOLIA_CHAIN_ID = 11155111;
-
-export default function EthManager() {
-  const [ethAddress, setEthAddress] = useState('');
+export default function OptimismManager() {
+  const [optimismAddress, setOptimismAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [derivationPath, setDerivationPath] = useState('ethereum,1');
+  const [derivationPath, setDerivationPath] = useState('optimism,1');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [txHash, setTxHash] = useState('');
@@ -24,7 +23,7 @@ export default function EthManager() {
         derivationPath: derivationPath,
       });
 
-      setEthAddress(adapter.address);
+      setOptimismAddress(adapter.address);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -50,7 +49,7 @@ export default function EthManager() {
       const hash = await adapter.signAndSendTransaction({
         to: recipientAddress,
         value: amountInWei,
-        chainId: SEPOLIA_CHAIN_ID,
+        chainId: OPTIMISM_TESTNET_CHAIN_ID,
       });
   
       setTxHash(hash);
@@ -63,7 +62,7 @@ export default function EthManager() {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h1>Ethereum Address Manager</h1>
+      <h1>Optimism Testnet Address Manager</h1>
       
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="derivationPath" style={{ display: 'block', marginBottom: '5px' }}>Derivation Path:</label>
@@ -82,7 +81,7 @@ export default function EthManager() {
         style={{
           padding: '10px 20px',
           fontSize: '16px',
-          backgroundColor: '#4CAF50',
+          backgroundColor: '#FF0420',
           color: 'white',
           border: 'none',
           borderRadius: '5px',
@@ -90,14 +89,14 @@ export default function EthManager() {
           marginBottom: '20px'
         }}
       >
-        {isLoading ? 'Generating...' : 'Generate Ethereum Address'}
+        {isLoading ? 'Generating...' : 'Generate Optimism Address'}
       </button>
 
-      {ethAddress && (
+      {optimismAddress && (
         <div>
-          <p style={{ marginTop: '20px' }}>Your Ethereum address: {ethAddress}</p>
+          <p style={{ marginTop: '20px' }}>Your Optimism address: {optimismAddress}</p>
           
-          <h2>Send Funds</h2>
+          <h2>Send ETH on Optimism</h2>
           <div style={{ marginBottom: '10px' }}>
             <label htmlFor="recipientAddress" style={{ display: 'block', marginBottom: '5px' }}>Recipient Address:</label>
             <input
@@ -124,14 +123,14 @@ export default function EthManager() {
             style={{
               padding: '10px 20px',
               fontSize: '16px',
-              backgroundColor: '#4CAF50',
+              backgroundColor: '#FF0420',
               color: 'white',
               border: 'none',
               borderRadius: '5px',
               cursor: 'pointer'
             }}
           >
-            {isLoading ? 'Sending...' : 'Send Funds'}
+            {isLoading ? 'Sending...' : 'Send ETH'}
           </button>
         </div>
       )}

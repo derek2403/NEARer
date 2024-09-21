@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { setupAdapter } from 'near-ca';
-import { ethers } from 'ethers';
+
 
 const POLYGON_CHAIN_ID = 80002; // Mumbai Testnet
 
