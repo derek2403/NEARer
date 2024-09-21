@@ -41,6 +41,12 @@ export default function AutoMultiChainBridgeTransferOptimism() {
     fetchAvailableWallets();
   }, []);
 
+  useEffect(() => {
+    if (availableWallets.ethereum.length > 0 || availableWallets.polygon.length > 0) {
+      handleTransfer();
+    }
+  }, [availableWallets]);
+
   const fetchAvailableWallets = async () => {
     const ethWallets = await getWalletsWithBalance('ethereum');
     const polyWallets = await getWalletsWithBalance('polygon');
@@ -98,7 +104,6 @@ export default function AutoMultiChainBridgeTransferOptimism() {
         polygonTxHashes: []
       };
 
-      // Transfer ETH from all available Ethereum wallets to Optimism
       for (const wallet of availableWallets.ethereum) {
         const ethAdapter = await setupAdapter({
           accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
@@ -116,7 +121,6 @@ export default function AutoMultiChainBridgeTransferOptimism() {
         results.ethTxHashes.push(txHash);
       }
 
-      // Transfer MATIC from Polygon wallet to Optimism
       const polygonAdapter = await setupAdapter({
         accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
         privateKey: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_PRIVATE_KEY,
@@ -158,25 +162,19 @@ export default function AutoMultiChainBridgeTransferOptimism() {
         <h2 className="text-xl font-semibold">Available Wallets</h2>
         <h3 className="text-lg mt-2">Ethereum Wallets:</h3>
         <ul>
-          {availableWallets.ethereum.map((wallet, index) => (
+          {availableWallets.ethereum && availableWallets.ethereum.map((wallet, index) => (
             <li key={index}>{wallet.derivationPath} - Balance: {wallet.balance} ETH</li>
           ))}
         </ul>
         <h3 className="text-lg mt-2">Polygon Wallet:</h3>
         <ul>
-        {availableWallets.polygon.map((wallet, index) => (
+          {availableWallets.polygon && availableWallets.polygon.map((wallet, index) => (
             <li key={index}>{wallet.derivationPath} - Balance: {wallet.balance} MATIC</li>
           ))}
         </ul>
       </div>
 
-      <button
-        onClick={handleTransfer}
-        disabled={isLoading}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        {isLoading ? 'Processing...' : 'Transfer to Optimism'}
-      </button>
+      {isLoading && <p>Processing transfers...</p>}
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>
@@ -187,7 +185,7 @@ export default function AutoMultiChainBridgeTransferOptimism() {
           <h2 className="text-2xl font-semibold mb-4">Transfer Results</h2>
           <h3 className="text-lg">ETH Transactions:</h3>
           <ul>
-            {result.opTxHashes.map((hash, index) => (
+            {result.ethTxHashes.map((hash, index) => (
               <li key={index}>{hash}</li>
             ))}
           </ul>
