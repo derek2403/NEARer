@@ -3,7 +3,9 @@ import CreateWallet from '../components/CreateWallet';
 import ListWallet from '../components/ListWallet';
 import Staking from '../components/Staking';
 import Transfer from '../components/Transfer';
+import Merge from '../components/Merge';  // Import the Merge component
 import Header from '@/components/Header';
+import Max from '@/components/Max';
 
 const Chatbot = () => {
   const [userInput, setUserInput] = useState('');
@@ -26,6 +28,11 @@ const Chatbot = () => {
     return null;
   };
 
+  // Function to check if the prompt contains the word 'merge'
+  const checkForMerge = (prompt) => {
+    return prompt.toLowerCase().includes('merge');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -35,32 +42,37 @@ const Chatbot = () => {
     console.log('User prompt:', userInput);
 
     try {
-      const res = await fetch(`/api/chat?chatQuery=${encodeURIComponent(userInput)}&model=gpt-4o`, {
-        method: 'GET',
-      });
-
-      const data = await res.json();
-
-      // If the response has a 'body' field (from your test script), parse it
-      let agentDataResponse;
-
-      if (data.body) {
-        agentDataResponse = JSON.parse(data.body);
+      let agentDataResponse = {};
+      
+      // Check if the prompt contains 'merge'
+      if (checkForMerge(userInput)) {
+        agentDataResponse.index = 6; // Set index to 6 for the Merge case
       } else {
-        agentDataResponse = data;
-      }
+        const res = await fetch(`/api/chat?chatQuery=${encodeURIComponent(userInput)}&model=gpt-4o`, {
+          method: 'GET',
+        });
 
-      // Console log the index and parameters
-      console.log('Index:', agentDataResponse.index);
-      console.log('Parameters:', agentDataResponse);
+        const data = await res.json();
 
-      // If transfer (index 3), parse the input for transfer details
-      if (agentDataResponse.index === 3) {
-        const parsedData = parseTransferPrompt(userInput);
-        if (parsedData) {
-          agentDataResponse = { ...agentDataResponse, ...parsedData };
+        // If the response has a 'body' field (from your test script), parse it
+        if (data.body) {
+          agentDataResponse = JSON.parse(data.body);
         } else {
-          agentDataResponse = { message: 'Sorry, I could not understand your transfer request.', index: -1 };
+          agentDataResponse = data;
+        }
+
+        // Console log the index and parameters
+        console.log('Index:', agentDataResponse.index);
+        console.log('Parameters:', agentDataResponse);
+
+        // If transfer (index 3), parse the input for transfer details
+        if (agentDataResponse.index === 3) {
+          const parsedData = parseTransferPrompt(userInput);
+          if (parsedData) {
+            agentDataResponse = { ...agentDataResponse, ...parsedData };
+          } else {
+            agentDataResponse = { message: 'Sorry, I could not understand your transfer request.', index: -1 };
+          }
         }
       }
 
@@ -88,7 +100,7 @@ const Chatbot = () => {
     const { index } = agentData;
 
     switch (index) {
-      case 1: // Staking
+      case 5: // Staking
         return <Staking data={agentData} />;
       case 2: // List wallets
         return <ListWallet data={agentData} />;
@@ -102,7 +114,9 @@ const Chatbot = () => {
         );
       case 4: // Create account
         return <CreateWallet data={agentData} />;
-      case 5: // Other cases
+      case 6: // Merge case
+        return <Merge data={agentData} />;
+      case 1: // Other cases
         return <Max data={agentData} />;
       default:
         return <p>{agentData.message}</p>;
