@@ -9,17 +9,18 @@ const POLYGON_CONFIG = {
   rpcUrl: 'https://rpc-amoy.polygon.technology/'
 };
 
-export default function ConsolidatePolygonFunds() {
+export default function Merge() {
   const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [consolidatedBalance, setConsolidatedBalance] = useState(null); // Consolidated balance for the first wallet
+  const [results, setResults] = useState([]);
+  const [consolidatedWallet, setConsolidatedWallet] = useState(null); // To store the first wallet's consolidated balance
 
   useEffect(() => {
     fetchWallets();
   }, []);
 
-  // Fetch wallets and trigger consolidation automatically
+  // Fetch wallets and start consolidation automatically
   const fetchWallets = async () => {
     setIsLoading(true);
     setError('');
@@ -54,11 +55,9 @@ export default function ConsolidatePolygonFunds() {
       }
       setWallets(newWallets);
 
+      // Start consolidation automatically if there are multiple wallets
       if (newWallets.length > 1) {
-        // Automatically trigger consolidation after fetching wallets
         await consolidateFunds(newWallets);
-      } else {
-        setError('Not enough wallets to consolidate funds.');
       }
     } catch (err) {
       setError(`Error fetching wallets: ${err.message}`);
@@ -70,10 +69,11 @@ export default function ConsolidatePolygonFunds() {
   const consolidateFunds = async (walletsToConsolidate) => {
     setIsLoading(true);
     setError('');
+    setResults([]);
 
     const targetWallet = walletsToConsolidate[0];
     const sourceWallets = walletsToConsolidate.slice(1);
-    let totalBalance = ethers.BigNumber.from(ethers.parseEther(targetWallet.balance)); // Start with target wallet balance
+    let totalBalance = ethers.BigNumber.from(0); // To sum up the total balance after consolidation
 
     try {
       const provider = new ethers.JsonRpcProvider(POLYGON_CONFIG.rpcUrl);
@@ -94,17 +94,36 @@ export default function ConsolidatePolygonFunds() {
         const amountToSend = balance - gasCost;
 
         if (amountToSend > 0) {
-          // Simulate transaction and add to total balance
+          const tx = await adapter.signAndSendTransaction({
+            to: targetWallet.address,
+            value: amountToSend,
+            chainId: POLYGON_CONFIG.chainId,
+            gasLimit: gasLimit,
+            gasPrice: gasPrice.gasPrice,
+          });
+
+          // Add up the balance
           totalBalance = totalBalance.add(amountToSend);
+
+          setResults(prev => [...prev, {
+            from: wallet.address,
+            to: targetWallet.address,
+            amount: ethers.formatEther(amountToSend),
+            txHash: tx
+          }]);
         }
       }
 
-      // Set the consolidated balance of the first wallet
-      setConsolidatedBalance(ethers.formatEther(totalBalance));
+      // Set the consolidated wallet balance
+      setConsolidatedWallet({
+        address: targetWallet.address,
+        balance: ethers.formatEther(totalBalance.add(ethers.parseEther(targetWallet.balance))) // Add the original target wallet balance
+      });
     } catch (err) {
       setError(`Error consolidating funds: ${err.message}`);
     } finally {
       setIsLoading(false);
+      fetchWallets(); // Refresh wallet balances after consolidation
     }
   };
 
@@ -115,10 +134,10 @@ export default function ConsolidatePolygonFunds() {
       {isLoading && <p>Consolidating funds, please wait...</p>}
 
       <h2 className="text-2xl font-semibold mb-2">Consolidated Wallet</h2>
-      {consolidatedBalance !== null ? (
+      {consolidatedWallet ? (
         <div className="mb-4 p-4 border rounded">
-          <p>Address: {wallets[0]?.address}</p>
-          <p>Balance: {consolidatedBalance} MATIC</p>
+          <p>Address: {consolidatedWallet.address}</p>
+          <p>Balance: {consolidatedWallet.balance} MATIC</p>
         </div>
       ) : (
         <p>No wallets available or not enough wallets to consolidate.</p>
@@ -126,6 +145,20 @@ export default function ConsolidatePolygonFunds() {
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>
+      )}
+
+      {results.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">Consolidation Results</h2>
+          {results.map((result, index) => (
+            <div key={index} className="mb-4 p-4 border rounded">
+              <p>From: {result.from}</p>
+              <p>To: {result.to}</p>
+              <p>Amount Sent: {result.amount} MATIC</p>
+              <p className="text-sm break-all">Transaction Hash: {result.txHash}</p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
