@@ -10,8 +10,8 @@ const Header = () => {
           <Image
             src="/logo.png"
             alt="Logo"
-            width={80}
-            height={30}
+            width={150}
+            height={80}
           />
         </div>
         <nav className="flex items-center space-x-6">
