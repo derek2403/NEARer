@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import WorldIDLogin from "@/components/WorldID";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import DotPattern from "@/components/magicui/dot-pattern";
 
 const ShuffleHero = () => {
   return (
@@ -150,11 +152,15 @@ const ShuffleGrid = () => {
 export default function HomePage() {
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden">
-      {/* Header */}
+      <div className="absolute inset-0 z-0">
+        <DotPattern
+          className={cn(
+            "[mask-image:radial-gradient(ellipse_at_center,white,transparent)] opacity-50"
+          )}
+        />
+      </div>
       <Header />
-
-      {/* Content */}
-      <div className="flex items-center justify-center flex-grow">
+      <div className="flex items-center justify-center flex-grow z-10">
         <ShuffleHero />
       </div>
     </div>
