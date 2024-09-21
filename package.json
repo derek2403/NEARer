@@ -9,14 +9,33 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@near-wallet-selector/core": "^8.9.13",
+    "@near-wallet-selector/modal-ui": "^8.9.13",
+    "@near-wallet-selector/my-near-wallet": "^8.9.13",
+    "@nextui-org/react": "^2.4.8",
+    "@worldcoin/idkit": "^1.3.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cobe": "^0.6.3",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "framer-motion": "^11.5.6",
+    "near-ca": "^0.5.6",
+    "next": "14.2.13",
+    "openai": "^4.63.0",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.13"
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.13"
-  }
+    "eslint-config-next": "14.2.13",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.12"
+  },
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "main": "tailwind.config.js",
+  "author": "",
+  "license": "ISC"
 }
