@@ -88,7 +88,7 @@ const Chatbot = () => {
     const { index } = agentData;
 
     switch (index) {
-      case 1: // Staking
+      case 5: // Staking
         return <Staking data={agentData} />;
       case 2: // List wallets
         return <ListWallet data={agentData} />;
@@ -102,7 +102,7 @@ const Chatbot = () => {
         );
       case 4: // Create account
         return <CreateWallet data={agentData} />;
-      case 5: // Other cases
+      case 1: // Other cases
         return <Max data={agentData} />;
       default:
         return <p>{agentData.message}</p>;
