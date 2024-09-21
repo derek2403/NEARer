@@ -41,6 +41,12 @@ export default function AutoMultiChainBridgeTransferEthereum() {
     fetchAvailableWallets();
   }, []);
 
+  useEffect(() => {
+    if (availableWallets.optimism.length > 0 || availableWallets.polygon.length > 0) {
+      handleTransfer();
+    }
+  }, [availableWallets]);
+
   const fetchAvailableWallets = async () => {
     const opWallets = await getWalletsWithBalance('optimism');
     const polyWallets = await getWalletsWithBalance('polygon');
@@ -98,7 +104,6 @@ export default function AutoMultiChainBridgeTransferEthereum() {
         polygonTxHashes: []
       };
 
-      // Transfer OP from all available Optimism wallets to Ethereum
       for (const wallet of availableWallets.optimism) {
         const opAdapter = await setupAdapter({
           accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
@@ -116,7 +121,6 @@ export default function AutoMultiChainBridgeTransferEthereum() {
         results.opTxHashes.push(txHash);
       }
 
-      // Transfer MATIC from Polygon wallet to Ethereum
       const polygonAdapter = await setupAdapter({
         accountId: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_ID,
         privateKey: process.env.NEXT_PUBLIC_NEAR_ACCOUNT_PRIVATE_KEY,
@@ -170,13 +174,7 @@ export default function AutoMultiChainBridgeTransferEthereum() {
         </ul>
       </div>
 
-      <button
-        onClick={handleTransfer}
-        disabled={isLoading}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        {isLoading ? 'Processing...' : 'Transfer to Ethereum'}
-      </button>
+      {isLoading && <p>Processing transfers...</p>}
 
       {error && (
         <p className="text-red-500 mt-4">{error}</p>
