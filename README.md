@@ -32,3 +32,19 @@ Max.js: Maximizes profits by optimizing asset distribution across chains and sta
 4. Transfer Funds: Use the Transfer feature to easily move assets between different EVM addresses.
 5. Merge Accounts: The Merge component helps users consolidate funds from multiple wallets into a single account.
 6. Maximize Profit: The Max component allows users to optimize profit by automating asset management across different blockchains.
+
+# Proof of Working
+WorldID: Verified on app_staging_b5350534c753a6583385bd6026f89d31
+
+NEAR Chain Signatures: Successfully executed transactions using Chain Signatures on multiple EVM chains:
+1. Ethereum: https://sepolia.etherscan.io/address/0xba9a44dc51735b215ad0844fef322afad3a8d99d
+2. Polygon: https://amoy.polygonscan.com/address/0x35610c3ca57592096706c89495e607e2a5c03e47
+3. Optimism: https://sepolia-optimism.etherscan.io/address/0xdd16d3dc9ded45680af0e88b95ad629303bdb1bf
+
+Phala Network: Proof of AI execution and model deployment:
+{
+  "date": "2024-09-21T04:59:39.312Z",
+  "cid": "Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ",
+  "url": "https://wapo-testnet.phala.network/ipfs/Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ"
+}
+
