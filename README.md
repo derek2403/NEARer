@@ -46,5 +46,5 @@ Phala Network: Proof of AI execution and model deployment:
   "date": "2024-09-21T04:59:39.312Z",
   "cid": "Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ",
   "url": "https://wapo-testnet.phala.network/ipfs/Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ"
-}
+} and https://b805a9b72767504353244e0422c2b5f9.ipfscdn.io/ipfs/Qmc2QJELJLHg6EhDqwEmmht3WayPmh3Jj9FhqazBs6F8jQ
 
